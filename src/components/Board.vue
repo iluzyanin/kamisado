@@ -1,70 +1,91 @@
 <template>
   <div class="board">
-    <div class="row" v-for="(row, i) in this.board" :key="row[0] + i">
+    <div class="tiles">
       <Tile
-        v-for="(cell, j) in row"
+        v-for="(cell, i) in board"
         :tileColor="cell"
-        :backColor="getBackColor(i, j)"
-        :towerColor="getTowerColor(i, j)"
-        :key="cell + j"
-        :selected="i === selectedRow && j === selectedColumn"
-        v-on:select="() => selectTile(i,j)"
+        :key="'key' + i"
+        :selected="i === selectedIndex"
       />
     </div>
+    <transition-group tag="div" name="tower" class="towers">
+      <Tower
+        v-for="(tower, i) in towers"
+        :key="tower.id"
+        :backColor="tower.player === 1 ? 'black' : tower.player === 2 ? 'white' : ''"
+        :towerColor="tower.color"
+        :selected="i === selectedIndex"
+        :available="moves.indexOf(i) > -1 ? player : 0"
+        @hover="() => setHover(i)"
+        @select="() => selectTile(i)"
+      />
+    </transition-group>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import Tile from './Tile.vue';
-import board from '../board';
+import Tower from './Tower.vue';
+import { createBoard, createTowers, getMoves } from '../board';
 import Color from '../color';
-
-interface Tower {
-  player: Number;
-  color: Color;
-  row: Number;
-  column: Number;
-}
-
-const towers: Tower[] = [
-  ...board[0].map((cell, i) => ({ player: 0, color: cell, row: 0, column: i })),
-  ...board[7].map((cell, i) => ({ player: 1, color: cell, row: 7, column: i })),
-];
-
-const getTower = (row: number, column: number) => {
-  return towers.find(tower => tower.row === row && tower.column === column);
-};
 
 const HelloWorld = Vue.extend({
   components: {
     Tile,
+    Tower,
   },
   data() {
     return {
-      board: board,
-      towers: towers,
-      selectedRow: -1,
-      selectedColumn: -1,
+      board: createBoard(),
+      towers: createTowers(),
+      selectedIndex: -1,
+      hoverIndex: -1,
+      player: -1,
     };
   },
-  methods: {
-    getBackColor: function(row: number, column: number) {
-      const tower = getTower(row, column);
-      if (tower) {
-        return tower.player === 0 ? 'black' : 'white';
+  computed: {
+    moves() {
+      if (this.selectedIndex === -1) {
+        return [];
       }
 
-      return '';
-    },
-    getTowerColor: function(row: number, column: number) {
-      const tower = getTower(row, column);
+      const moves = getMoves(this.selectedIndex, this.player, this.towers);
 
-      return tower ? tower.color : '';
+      return moves;
     },
-    selectTile: function(row: number, column: number) {
-      this.selectedRow = row;
-      this.selectedColumn = column;
+  },
+  methods: {
+    selectTile: function(index: number) {
+      if (this.selectedIndex === -1) {
+        const tower = this.towers[index];
+        if (tower && tower.player > 0) {
+          this.selectedIndex = index;
+          this.player = tower.player;
+        }
+      } else {
+        if (this.moves.indexOf(index) > -1) {
+          this.move(index);
+        }
+      }
+    },
+    setHover: function(index: number) {
+      if (index !== this.hoverIndex) {
+        this.hoverIndex = index;
+      }
+    },
+    move: function(index: number) {
+      const selectedTower = this.towers[this.selectedIndex];
+      const indexTower = this.towers[index];
+      this.$set(this.towers, index, selectedTower);
+      this.$set(this.towers, this.selectedIndex, indexTower);
+      const otherPlayer = this.player === 1 ? 2 : 1;
+      const otherPlayerTower = this.towers.find(
+        t => t.color === this.board[index] && t.player === otherPlayer
+      );
+
+      this.selectedIndex = this.towers.indexOf(otherPlayerTower);
+      this.player = otherPlayer;
     },
   },
 });
@@ -74,10 +95,36 @@ export default HelloWorld;
 
 <style scoped>
 .board {
-  display: flex;
-  flex-direction: column;
+  display: inline-block;
+  position: relative;
+  width: 90%;
+  max-width: 600px;
 }
-.row {
+.board:before {
+  content: '';
+  display: block;
+  margin-top: 100%;
+}
+.tiles {
   display: flex;
+  flex-wrap: wrap;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.towers {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-wrap: wrap;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.tower-move {
+  transition: transform 1s;
 }
 </style>
