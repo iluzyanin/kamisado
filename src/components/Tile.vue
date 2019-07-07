@@ -2,7 +2,12 @@
   <div
     :class="`tile color--${this.tileColor} ${this.selected ? 'selected' : ''} ${this.hover ? 'hover' : ''}`"
     v-on:click="$emit('select')"
-  ></div>
+  >
+    <span
+      v-if="available > 0"
+      :class="`available available--${available === 1 ? 'first' : 'second'}`"
+    />
+  </div>
 </template>
 
 <script lang="ts">
@@ -14,6 +19,7 @@ const Tile = Vue.extend({
     tileColor: String,
     selected: Boolean,
     hover: Boolean,
+    available: Number,
   },
 });
 
@@ -47,26 +53,48 @@ export default Tile;
 .color--red {
   background: linear-gradient(100deg, #ddd -100%, #ff4136);
 }
+
 .color--orange {
   background: linear-gradient(100deg, #ddd -100%, #ff851b);
 }
+
 .color--blue {
   background: linear-gradient(100deg, #ddd -100%, #0074d9);
 }
+
 .color--purple {
   background: linear-gradient(100deg, #ddd -100%, #ba55d3);
 }
+
 .color--pink {
   background: linear-gradient(100deg, #ddd -100%, #ffb6c1);
 }
+
 .color--yellow {
   background: linear-gradient(100deg, #ddd -100%, #fab81e);
 }
+
 .color--green {
   background: linear-gradient(100deg, #ddd -100%, #2ecc40);
 }
+
 .color--brown {
   background: linear-gradient(100deg, #ddd -100%, #a0522d);
+}
+
+.available {
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  opacity: 0.7;
+}
+
+.available--first {
+  background-color: #555;
+}
+
+.available--second {
+  background-color: #eee;
 }
 </style>
 

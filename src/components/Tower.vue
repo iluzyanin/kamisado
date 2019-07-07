@@ -6,10 +6,6 @@
     >
       <v-icon name="chess-rook" />
     </div>
-    <span
-      v-if="available > 0"
-      :class="`available available--${available === 1 ? 'first' : 'second'}`"
-    />
   </div>
 </template>
 
@@ -22,7 +18,6 @@ const Tower = Vue.extend({
     backColor: String,
     towerColor: String,
     selected: Boolean,
-    available: Number,
   },
 });
 
@@ -94,19 +89,6 @@ export default Tower;
 
 .iconBack--white {
   background: radial-gradient(#ccc, #fff);
-}
-
-.available {
-  width: 30%;
-  height: 30%;
-  border-radius: 50%;
-  opacity: 0.7;
-}
-.available--first {
-  background-color: #555;
-}
-.available--second {
-  background-color: #eee;
 }
 </style>
 

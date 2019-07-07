@@ -3,6 +3,7 @@
     <div class="tiles">
       <Tile
         v-for="(cell, i) in board"
+        :available="moves.indexOf(i) > -1 ? player : 0"
         :tileColor="cell"
         :key="'key' + i"
         :selected="i === selectedIndex"
@@ -15,7 +16,6 @@
         :backColor="tower.player === 1 ? 'black' : tower.player === 2 ? 'white' : ''"
         :towerColor="tower.color"
         :selected="i === selectedIndex"
-        :available="moves.indexOf(i) > -1 ? player : 0"
         @hover="() => setHover(i)"
         @select="() => selectTile(i)"
       />
