@@ -1,5 +1,5 @@
 <template>
-  <div class="icon-container" v-on:click="$emit('select')" v-on:mouseover="$emit('hover')">
+  <div class="icon-container" v-on:click="$emit('select')">
     <div
       :class="`icon iconBack--${this.backColor} icon--${this.towerColor}`"
       v-if="towerColor && backColor"

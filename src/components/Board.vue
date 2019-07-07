@@ -16,7 +16,6 @@
         :backColor="tower.player === 1 ? 'black' : tower.player === 2 ? 'white' : ''"
         :towerColor="tower.color"
         :selected="i === selectedIndex"
-        @hover="() => setHover(i)"
         @select="() => selectTile(i)"
       />
     </transition-group>
@@ -40,7 +39,6 @@ const HelloWorld = Vue.extend({
       board: createBoard(),
       towers: createTowers(),
       selectedIndex: -1,
-      hoverIndex: -1,
       player: -1,
     };
   },
@@ -67,11 +65,6 @@ const HelloWorld = Vue.extend({
         if (this.moves.indexOf(index) > -1) {
           this.move(index);
         }
-      }
-    },
-    setHover: function(index: number) {
-      if (index !== this.hoverIndex) {
-        this.hoverIndex = index;
       }
     },
     move: function(index: number) {
