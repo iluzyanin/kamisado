@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Board msg="Welcome to Your Vue.js + TypeScript App"/>
+    <Board @gameOver="updateState" />
   </div>
 </template>
 
@@ -9,21 +9,30 @@ import { Component, Vue } from 'vue-property-decorator';
 import Board from './components/Board.vue';
 import Tile from './components/Tile.vue';
 
-@Component({
+const App = Vue.extend({
+  data() {
+    return {
+      playerWon: -1,
+    };
+  },
   components: {
     Board,
   },
-})
-export default class App extends Vue {}
+  methods: {
+    updateState({ player }: any) {
+      this.playerWon = player;
+    },
+  },
+});
+export default App;
 </script>
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 }
 </style>

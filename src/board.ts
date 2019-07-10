@@ -86,4 +86,12 @@ const getMoves = (
   return result;
 };
 
-export { createBoard, createTowers, getMoves };
+const getGameOver = (humanWon: boolean) => {
+  const arr: string[] = new Array(64).fill('');
+  arr.splice(10, 4, 'G', 'A', 'M', 'E');
+  arr.splice(18, 4, 'O', 'V', 'E', 'R');
+
+  return arr;
+};
+
+export { createBoard, createTowers, getMoves, getGameOver };

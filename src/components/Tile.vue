@@ -7,6 +7,7 @@
       v-if="available > 0"
       :class="`available available--${available === 1 ? 'first' : 'second'}`"
     />
+    <span v-if="char" class="char">{{ char }}</span>
   </div>
 </template>
 
@@ -20,6 +21,7 @@ const Tile = Vue.extend({
     selected: Boolean,
     hover: Boolean,
     available: Number,
+    char: String,
   },
 });
 
@@ -95,6 +97,19 @@ export default Tile;
 
 .available--second {
   background-color: #eee;
+}
+
+.char {
+  font-family: monospace;
+  font-size: 3em;
+  font-weight: bold;
+  color: #7b002a;
+}
+
+@media (max-width: 450px) {
+  .char {
+    font-size: 2em;
+  }
 }
 </style>
 
