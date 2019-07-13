@@ -31,7 +31,13 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import Tile from './Tile.vue';
 import Tower from './Tower.vue';
-import { createBoard, createTowers, getMoves, getGameOver } from '../board';
+import {
+  createBoard,
+  createTowers,
+  getMoves,
+  getGameOver,
+  getRandomMove,
+} from '../board';
 import Color from '../color';
 
 const HelloWorld = Vue.extend({
@@ -56,7 +62,7 @@ const HelloWorld = Vue.extend({
         return [];
       }
 
-      const moves = getMoves(this.selectedPosition, this.player, this.towers);
+      const moves = getMoves(this.selectedPosition, this.towers);
 
       return moves;
     },
@@ -116,17 +122,21 @@ const HelloWorld = Vue.extend({
         }
         movesTried.push(nextPosition);
 
-        nextMoves = getMoves(nextPosition, this.player, this.towers);
+        nextMoves = getMoves(nextPosition, this.towers);
       }
 
       this.selectedPosition = nextPosition;
 
       if (this.player === this.computerPlayer) {
-        let moveIndex = nextMoves.findIndex(move => move < 8 || move > 55);
-        if (moveIndex === -1) {
-          moveIndex = Math.floor(Math.random() * nextMoves.length);
+        let computerMove = nextMoves.find(m => m < 8 || m > 55);
+        if (typeof computerMove === 'undefined') {
+          computerMove = getRandomMove(
+            nextMoves,
+            this.towers,
+            this.player === 1 ? 2 : 1
+          );
         }
-        setTimeout(() => this.move(nextMoves[moveIndex]), 500);
+        setTimeout(() => this.move(computerMove), 500);
       }
     },
   },

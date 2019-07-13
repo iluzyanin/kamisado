@@ -41,13 +41,10 @@ const createTowers = (): Tower[] =>
     };
   });
 
-const getMoves = (
-  position: number,
-  player: number,
-  towers: Tower[]
-): number[] => {
+const getMoves = (position: number, towers: Tower[]): number[] => {
   const result: number[] = [];
   const row = Math.floor(position / 8);
+  const player = towers[position].player;
   let stopStraight = false;
   let stopLeft = false;
   let stopRight = false;
@@ -91,7 +88,53 @@ const getGameOver = (humanWon: boolean) => {
   arr.splice(10, 4, 'G', 'A', 'M', 'E');
   arr.splice(18, 4, 'O', 'V', 'E', 'R');
 
+  if (humanWon) {
+    arr.splice(34, 4, 'N', 'I', 'C', 'E');
+    arr.splice(42, 4, 'W', 'O', 'R', 'K');
+  } else {
+    arr.splice(35, 2, 'N', '0');
+    arr.splice(42, 4, 'L', 'U', 'C', 'K');
+  }
+
   return arr;
 };
 
-export { createBoard, createTowers, getMoves, getGameOver };
+const shuffle = (numbers: number[]): number[] => {
+  const shuffled = numbers.slice(0);
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  return shuffled;
+};
+
+const getRandomMove = (position: number, towers: Tower[]) => {
+  const moves = getMoves(position, towers);
+  const otherPlayer = towers[position].player === 1 ? 2 : 1;
+  const board = createBoard();
+  const shuffled = shuffle(moves);
+
+  while (shuffled.length > 0) {
+    const move = shuffled.pop();
+    const otherPlayerPosition = towers.findIndex(
+      t => t.color === board[move] && t.player === otherPlayer
+    );
+    const moveTowers = towers.slice(0);
+    [moveTowers[position], moveTowers[move]] = [
+      moveTowers[move],
+      moveTowers[position],
+    ];
+    const otherPlayerMoves = getMoves(otherPlayerPosition, moveTowers);
+    if (
+      !otherPlayerMoves.find(m => m > 55) &&
+      !otherPlayerMoves.find(m => m < 8)
+    ) {
+      return move;
+    }
+  }
+
+  return moves[0];
+};
+
+export { createBoard, createTowers, getMoves, getGameOver, getRandomMove };
