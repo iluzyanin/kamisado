@@ -1,5 +1,5 @@
 <template>
-  <div class="icon-container" v-on:click="$emit('select')">
+  <div class="tower" v-on:click="$emit('select')">
     <div
       :class="`icon iconBack--${this.backColor} icon--${this.towerColor}`"
       v-if="towerColor && backColor"
@@ -25,7 +25,7 @@ export default Tower;
 </script>
 
 <style scoped>
-.icon-container {
+.tower {
   width: 10.417%;
   height: 10.417%;
   margin: 1.04%;

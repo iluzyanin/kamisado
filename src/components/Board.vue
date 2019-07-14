@@ -68,17 +68,17 @@ const HelloWorld = Vue.extend({
     },
   },
   methods: {
-    selectTile: function(index: number) {
+    selectTile: function(position: number) {
       if (this.selectedPosition === -1) {
-        const tower = this.towers[index];
+        const tower = this.towers[position];
         if (tower && tower.player > 0) {
-          this.selectedPosition = index;
+          this.selectedPosition = position;
           this.player = tower.player;
           this.computerPlayer = this.player === 1 ? 2 : 1;
         }
       } else {
-        if (this.moves.indexOf(index) > -1) {
-          this.move(index);
+        if (this.moves.indexOf(position) > -1) {
+          this.move(position);
         }
       }
     },
@@ -92,14 +92,15 @@ const HelloWorld = Vue.extend({
         this.boardText = getGameOver(winner !== this.computerPlayer);
       }, 500);
     },
-    move: function(index: number) {
+    move: function(position: number) {
       const selectedTower = this.towers[this.selectedPosition];
-      const indexTower = this.towers[index];
-      this.$set(this.towers, index, selectedTower);
+      const indexTower = this.towers[position];
+      this.$set(this.towers, position, selectedTower);
       this.$set(this.towers, this.selectedPosition, indexTower);
+      this.$emit('move', position, this.player, this.towers[position].color);
       if (
-        (index > 55 && this.player === 1) ||
-        (index < 8 && this.player === 2)
+        (position > 55 && this.player === 1) ||
+        (position < 8 && this.player === 2)
       ) {
         this.endGame(this.player);
 
@@ -114,7 +115,7 @@ const HelloWorld = Vue.extend({
       while (nextMoves.length === 0) {
         this.togglePlayer();
         nextPosition = this.towers.findIndex(
-          t => t.color === this.board[index] && t.player === this.player
+          t => t.color === this.board[position] && t.player === this.player
         );
         if (movesTried.indexOf(nextPosition) > -1) {
           this.endGame(currentPlayer === 1 ? 2 : 1);
@@ -130,11 +131,7 @@ const HelloWorld = Vue.extend({
       if (this.player === this.computerPlayer) {
         let computerMove = nextMoves.find(m => m < 8 || m > 55);
         if (typeof computerMove === 'undefined') {
-          computerMove = getRandomMove(
-            nextMoves,
-            this.towers,
-            this.player === 1 ? 2 : 1
-          );
+          computerMove = getRandomMove(this.selectedPosition, this.towers);
         }
         setTimeout(() => this.move(computerMove), 500);
       }
@@ -176,7 +173,7 @@ export default HelloWorld;
   bottom: 0;
   left: 0;
 }
-.towers--gameOver .icon-container {
+.towers--gameOver .tower {
   opacity: 0.1;
   transition: opacity 1s, transform 1s;
 }
